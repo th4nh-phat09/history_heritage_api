@@ -1,16 +1,43 @@
 import express from 'express'
+import { CONNECT_DB, CLOSE_DB } from './config/mongodb'
+import exitHook from 'async-exit-hook'
+import { env } from '~/config/environment'
+const START_SERVER = () => {
+  const app = express()
+  app.use(express.json())
+  //app.use('/v1', APIs_V1)
+  //app.use(errorHandlingMiddleware)
+  app.listen(env.LOCAL_APP_PORT, env.LOCAL_APP_HOST, () => {
+    console.log(`Hello World, I am running at ${env.LOCAL_APP_PORT}:${env.LOCAL_APP_HOST}/`)
+  })
 
-const app = express()
+  exitHook(() => {
+    console.log('Disconnecting database connection')
+    CLOSE_DB()
+    console.log('Disconnected database connection')
+  })
 
-const hostname = 'localhost'
-const port = 8017
+}
 
-app.get('/', (req, res) => {
 
-  res.end('<h1>Hello World!</h1><hr>')
-})
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello 4Menoy, I am running at ${hostname}:${port}/`)
-})
+(async () => {
+  try {
+    console.log('Connecting to database')
+    await CONNECT_DB()
+    console.log('Connected to database')
+    START_SERVER()
+  } catch (error) {
+    console.error('Error connecting to database:', error)
+    process.exit(0)
+  }
+})()
+
+// CONNECT_DB()
+//   .then(() => console.log('Connected to database'))
+//   .then(() => START_SERVER() )
+//   .catch(error => {
+//     console.error('Error connecting to database:', error)
+//     process.exit(0)
+//   })
+
