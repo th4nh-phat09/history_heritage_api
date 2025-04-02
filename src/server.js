@@ -20,6 +20,7 @@ const START_SERVER = () => {
 }
 
 
+
 (async () => {
   try {
     console.log('Connecting to database')
@@ -39,3 +40,4 @@ const START_SERVER = () => {
 //     console.error('Error connecting to database:', error)
 //     process.exit(0)
 //   })
+
